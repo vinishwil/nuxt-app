@@ -23,11 +23,11 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['@mdi/font/css/materialdesignicons.css'],
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['@plugins/vuetify', '@plugins/firebase'],
   /*
    ** Nuxt.js dev-modules
    */
