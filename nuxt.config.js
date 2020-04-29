@@ -16,6 +16,8 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
+
+  // router: { middleware: ['checkForLogin', 'authentication'] },
   /*
    ** Customize the progress-bar color
    */
@@ -27,7 +29,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@plugins/vuetify'],
+  plugins: ['@plugins/vuetify', '@plugins/firebase'],
   /*
    ** Nuxt.js dev-modules
    */

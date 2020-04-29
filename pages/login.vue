@@ -4,7 +4,7 @@
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col md="4">
-            <v-card v-if="signUp" width="400" class="elevation-12 mx-auto mt-5">
+            <v-card v-if="signIn" width="400" class="elevation-12 mx-auto mt-5">
               <v-card-text class="mx-4">
                 <div class="text-center">
                   <h2 class="sign-in mb-10">
@@ -12,12 +12,14 @@
                   </h2>
                 </div>
                 <v-text-field
+                  v-model="signInData.email"
                   label="Email"
                   name="Your email"
                   type="email"
                   autocomplete="off"
                 />
                 <v-text-field
+                  v-model="signInData.password"
                   label="Password"
                   type="password"
                   container-class="mb-0"
@@ -33,6 +35,7 @@
                     rounded
                     color="primary"
                     class="z-depth-1a"
+                    @click="signInWithFirebase"
                     >Sign in</v-btn
                   >
                 </div>
@@ -92,8 +95,17 @@
                 <div class="text-center">
                   <h2 class="pink--text mb-10"><strong>Sign up</strong></h2>
                 </div>
-                <v-text-field label="Your email" type="text" />
-                <v-text-field label="Your password" type="password" />
+                <v-text-field
+                  v-model="signUpData.email"
+                  label="Your Email"
+                  type="text"
+                  autocomplete="off"
+                />
+                <v-text-field
+                  v-model="signUpData.password"
+                  label="Your Password"
+                  type="password"
+                />
                 <v-checkbox
                   id="defaultCheck16"
                   class="my-5 login-checkbox"
@@ -102,7 +114,13 @@
                 />
                 <v-row class="d-block align-items-center">
                   <v-col class="text-center">
-                    <v-btn block dark type="button" color="pink">
+                    <v-btn
+                      block
+                      dark
+                      type="button"
+                      color="pink"
+                      @click="signUpWithFirebase"
+                    >
                       Sign up
                     </v-btn>
                   </v-col>
@@ -146,29 +164,98 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-snackbar v-model="snackbar" :timeout="timeout" :color="snackColor">
+          {{ snackbarText }}
+          <v-btn dark text @click="snackbar = false">
+            Close
+          </v-btn>
+        </v-snackbar>
       </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import * as firebase from 'firebase/app'
+import 'firebase/auth'
+import Cookies from 'js-cookie'
 export default {
   props: {},
-  // eslint-disable-next-line prettier/prettier
-  data () {
+  data() {
     return {
-      signUp: true
+      signIn: true,
+      signUpData: {
+        email: '',
+        password: ''
+      },
+      signInData: {
+        email: '',
+        password: ''
+      },
+      snackbar: false,
+      snackbarText: "Hello, I'm a snackbar",
+      timeout: 6000,
+      snackColor: 'error'
     }
   },
   layout: 'loginLayout',
+  // mounted() {
+  //   firebase.auth().onAuthStateChanged((user) => {
+  //     console.log(user)
+  //     if (user) {
+  //       this.$router.push('/home')
+  //     } else {
+  //       this.$router.push('/login')
+  //     }
+  //   })
+  // },
   methods: {
-    // eslint-disable-next-line prettier/prettier
-    showSignUp () {
-      this.signUp = false
+    showSignUp() {
+      this.signIn = false
     },
-    // eslint-disable-next-line prettier/prettier
-    showSignIn () {
-      this.signUp = true
+    showSignIn() {
+      this.signIn = true
+    },
+    signInWithFirebase() {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(
+          this.signInData.email,
+          this.signInData.password
+        )
+        .then((data) => {
+          this.$router.push('/home')
+          firebase
+            .auth()
+            .currentUser.getIdToken(true)
+            .then((token) => {
+              Cookies.set('access_token', token)
+            })
+        })
+        .catch((error) => {
+          this.snackbarText = error.message
+          this.snackbar = true
+          this.snackColor = 'error'
+        })
+    },
+    signUpWithFirebase() {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(
+          this.signUpData.email,
+          this.signUpData.password
+        )
+        .then((data) => {
+          this.snackbarText = 'SignUp success, Kindly SignIn'
+          this.snackbar = true
+          this.snackColor = 'success'
+          this.signIn = true
+        })
+        .catch((error) => {
+          this.snackbarText = error.message
+          this.snackbar = true
+          this.snackColor = 'error'
+        })
     }
   }
 }

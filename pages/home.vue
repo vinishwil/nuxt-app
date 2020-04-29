@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  layout: 'default',
+  layout: 'pageLayout',
   props: {}
 }
 </script>
@@ -14,6 +14,5 @@ export default {
 main {
   background-image: url('../assets/bg5.jpg');
   background-size: cover;
-  /* background-color: lightslategrey; */
 }
 </style>

@@ -11,10 +11,13 @@ const firebaseConfig = {
   appId: '1:485819303044:web:8eb2c40ee216b27a1eaed1',
   measurementId: 'G-4HC90FJ6DQ'
 }
+
+// eslint-disable-next-line no-unused-vars
+let auth = null
 // Initialize Firebase
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig)
-  firebase.analytics()
+  auth = firebase.initializeApp(firebaseConfig)
+  // firebase.analytics()
 }
 
 export default firebase
